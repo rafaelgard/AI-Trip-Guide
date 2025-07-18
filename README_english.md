@@ -5,8 +5,7 @@ A smart assistant that summarizes insights from dozens of travel videos and help
 ![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.34.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
-
-![AI Trip Guide Banner](./assets/cover.png)
+![AI Trip Guide Banner](src\images\cover.png)
 
 ---
 
