@@ -1,0 +1,48 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ambientes virtuais
+env/
+venv/
+*.egg-info/
+__pycache__/
+*.pyc
+
+# Arquivos temporários
+*.log
+*.tmp
+*.bak
+
+# Arquivos do Streamlit
+.streamlit/config.toml
+
+# Arquivos do Whisper e yt-dlp
+*.wav
+*.mp3
+*.mp4
+
+# Áudios baixados e transcrições
+src/transcriptions/
+!src/transcriptions/.gitkeep  # mantém a pasta no repositório vazia
+
+# Cache de respostas
+src/cache/
+!src/cache/.gitkeep
+
+# Índices e banco vetorial
+src/vectordatabase/
+!src/vectordatabase/.gitkeep
+
+# Arquivos exportados
+*.pdf
+
+# Chaves e variáveis sensíveis
+.env
+
+# Arquivos do VSCode
+.vscode/
+
+# Dados do usuário e arquivos grandes
+data/
+!data/.gitkeep
