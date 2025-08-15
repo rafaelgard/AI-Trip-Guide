@@ -11,6 +11,8 @@ import streamlit as st
 
 load_dotenv()
 
+modo = os.getenv("MODO")
+
 def buscar_videos_youtube(query, max_results=30):
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
@@ -143,10 +145,11 @@ def contar_transcricoes_existentes(pasta="src/transcriptions"):
     return total
 
 def verifica_base_transcricoes():
-    total_transcricoes_existentes = contar_transcricoes_existentes()
-    num_videos = int(os.getenv("NUM_VIDEOS", 30))
+    if modo !='cloud':
+        total_transcricoes_existentes = contar_transcricoes_existentes()
+        num_videos = int(os.getenv("NUM_VIDEOS", 30))
 
-    if total_transcricoes_existentes < num_videos:
-        st.info(f"🔄 Transcrições insuficientes. Iniciando coleta de vídeos...")
-        baixar_videos_youtube_por_termo("dicas Chile turismo", num_videos)
-        st.info("✅ Transcrições mínimas baixadas e processadas.")
+        if total_transcricoes_existentes < num_videos:
+            st.info(f"🔄 Transcrições insuficientes. Iniciando coleta de vídeos...")
+            baixar_videos_youtube_por_termo("dicas Chile turismo", num_videos)
+            st.info("✅ Transcrições mínimas baixadas e processadas.")
