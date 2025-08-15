@@ -27,8 +27,9 @@ src/transcriptions/
 !src/transcriptions/.gitkeep  # mantém a pasta no repositório vazia
 
 # Cache de respostas
-src/cache/
-!src/cache/.gitkeep
+# src/cache/
+# !src/cache/.gitkeep
+src/cache/respostas_chile.json
 
 # Índices e banco vetorial
 src/vectordatabase/
