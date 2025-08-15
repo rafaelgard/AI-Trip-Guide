@@ -32,8 +32,8 @@ src/transcriptions/
 src/cache/respostas_chile.json
 
 # Índices e banco vetorial
-src/vectordatabase/
-!src/vectordatabase/.gitkeep
+# src/vectordatabase/
+# !src/vectordatabase/.gitkeep
 
 # Arquivos exportados
 *.pdf
