@@ -4,6 +4,10 @@ from collections import Counter
 from llama_index.core import StorageContext, load_index_from_storage, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from src.mistral_llm import llm_traveller
+from dotenv import load_dotenv
+import os
+load_dotenv()
+modo = os.getenv("MODO")
 
 @st.cache_data(show_spinner="🔄 Carregando dados do índice...")
 def carregar_blocos():
@@ -24,9 +28,30 @@ def analise():
     documentos = carregar_blocos()
     total_blocos = len(documentos)
 
-    # Contagem de temas
-    temas = [doc.metadata.get("tema", "outros") for doc in documentos]
-    contagem_temas = Counter(temas)
+    if modo == 'cloud':
+        # Contagem de temas
+        temas = [doc.metadata.get("temas", "outros") for doc in documentos]
+
+        lista_de_temas= []
+        temas_unicos = []
+
+        for x in temas:
+            for y in x.split(','):
+                if y not in temas_unicos and y!='':
+                    temas_unicos.append(y)
+                
+                elif  y!='':
+                    lista_de_temas.append(y)
+
+
+        contagem_temas = Counter(lista_de_temas)
+        temas = temas_unicos
+
+    else:
+        # Contagem de temas
+        temas = [doc.metadata.get("tema", "outros") for doc in documentos]
+        contagem_temas = Counter(temas)
+
 
     # Duração total
     duracao_total_minutos = sum([doc.metadata.get("duracao_minutos", 0) for doc in documentos])

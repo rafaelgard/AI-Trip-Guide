@@ -1,6 +1,18 @@
 import os
 import streamlit as st
 from fpdf import FPDF
+import re
+
+def trata_temas(resposta):
+    # captura palavras entre aspas simples ou duplas
+    temas = re.findall(r"'(.*?)'|\"(.*?)\"", resposta)
+    
+    # re.findall retorna lista de tuplas, pegar valores não vazios
+    temas = [t1 or t2 for t1, t2 in temas]
+    
+    # junta numa string separada por vírgulas
+    resultado = ", ".join(temas)
+    return resultado
 
 def mostra_origem_da_resposta(resposta, tipo):
     if tipo == 'curto':

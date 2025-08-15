@@ -46,3 +46,6 @@ src/vectordatabase/
 # Dados do usuário e arquivos grandes
 data/
 !data/.gitkeep
+
+teste.py
+resumos.py

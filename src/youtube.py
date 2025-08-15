@@ -9,13 +9,15 @@ import yt_dlp
 from dotenv import load_dotenv
 import streamlit as st
 
+load_dotenv()
+
 def buscar_videos_youtube(query, max_results=30):
-    API_KEY = os.getenv("YOUTUBE_API_KEY")
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-    if not API_KEY:
-        raise ValueError("YOUTUBE_API_KEY não encontrada. Verifique o .env.")
+    if not GOOGLE_API_KEY:
+        raise ValueError("GOOGLE_API_KEY não encontrada. Verifique o .env.")
 
-    youtube = build('youtube', 'v3', developerKey=API_KEY)
+    youtube = build('youtube', 'v3', developerKey=GOOGLE_API_KEY)
 
     resultados = youtube.search().list(
         q=query,
@@ -113,8 +115,8 @@ def main(url):
 
     print("✅ Processo finalizado para este vídeo!")
 
-def baixar_videos_youtube_por_termo(termo_busca):
-    videos = buscar_videos_youtube(termo_busca, max_results=30)
+def baixar_videos_youtube_por_termo(termo_busca, num_videos):
+    videos = buscar_videos_youtube(termo_busca, max_results=num_videos)
 
     for i, (titulo, url) in enumerate(videos):
         print(f"\n🔗 Processando vídeo {i + 1}/{len(videos)}")
@@ -142,9 +144,9 @@ def contar_transcricoes_existentes(pasta="src/transcriptions"):
 
 def verifica_base_transcricoes():
     total_transcricoes_existentes = contar_transcricoes_existentes()
-    NUM_MINIMO = int(os.getenv("NUM_MINIMO"))
+    num_videos = int(os.getenv("NUM_VIDEOS", 30))
 
-    if total_transcricoes_existentes < NUM_MINIMO:
+    if total_transcricoes_existentes < num_videos:
         st.info(f"🔄 Transcrições insuficientes. Iniciando coleta de vídeos...")
-        baixar_videos_youtube_por_termo("dicas Chile turismo")
+        baixar_videos_youtube_por_termo("dicas Chile turismo", num_videos)
         st.info("✅ Transcrições mínimas baixadas e processadas.")

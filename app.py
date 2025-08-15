@@ -17,8 +17,10 @@ st.session_state.pagina = pagina_selecionada
 # Carrega a página selecionada
 if st.session_state.pagina == "Home":
     home()
+
 elif st.session_state.pagina == "Análise":
     analise()
+    
 elif st.session_state.pagina == "Contato":
     st.title("📧 Contato")
     st.write("Aqui você pode colocar informações de contato.")

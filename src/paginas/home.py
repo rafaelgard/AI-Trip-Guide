@@ -68,11 +68,11 @@ def home():
             key="input_pergunta"
         )
 
-        # Verifica se a base de transcrições está pronta
+        # # Verifica se a base de transcrições está pronta
         with st.spinner("Verificando o tamanho da base de transcrições existente...", show_time=True):
             verifica_base_transcricoes()
 
-        # Preencher cache com perguntas sugeridas
+        # # Preencher cache com perguntas sugeridas
         with st.spinner("Verificando o cache...", show_time=True):
             preencher_cache_com_exemplos(st.session_state["query_fn"])
         
