@@ -1,6 +1,7 @@
 import streamlit as st
 from src.paginas.home import home
 from src.paginas.analise import analise
+from src.paginas.contato import contato
 
 # Inicializar o valor de página no session_state, se não estiver definido
 if 'pagina' not in st.session_state:
@@ -22,5 +23,4 @@ elif st.session_state.pagina == "Análise":
     analise()
     
 elif st.session_state.pagina == "Contato":
-    st.title("📧 Contato")
-    st.write("Aqui você pode colocar informações de contato.")
+    contato()

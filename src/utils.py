@@ -40,16 +40,16 @@ def exportar_historico_para_pdf(historico):
 
     pdf.add_page()
     pdf.set_font("DejaVu", "B", 16)
-    pdf.cell(0, 10, "💬 Histórico da Conversa", ln=True)
+    pdf.cell(0, 10, "Histórico da Conversa", ln=True)
     pdf.ln(5)
 
     for pergunta, resposta in historico:
         pdf.set_font("DejaVu", "B", 12)
-        pdf.multi_cell(0, 10, f"🧍 Você: {pergunta}")
+        pdf.multi_cell(0, 10, f"Você: {pergunta}")
         pdf.ln(1)
 
         pdf.set_font("DejaVu", "", 12)
-        pdf.multi_cell(0, 10, f"🤖 LLM: {resposta}")
+        pdf.multi_cell(0, 10, f"LLM: {resposta}")
         pdf.ln(5)
 
     pdf.set_font("DejaVu", "", 10)
@@ -63,5 +63,6 @@ def exportar_historico_para_pdf(historico):
     pdf.multi_cell(0, 10, rodape)
 
     caminho = "historico_conversa.pdf"
+    # breakpoint()
     pdf.output(caminho)
     return caminho
