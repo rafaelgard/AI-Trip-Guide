@@ -1,9 +1,12 @@
+import os
 import streamlit as st
 from src.utils import exportar_historico_para_pdf
 from src.mistral_llm import llm_traveller
 from src.themes import THEMATIC_QUESTIONS
 from src.cache.respostas_cache import obter_ou_gerar_resposta, preencher_cache_com_exemplos
 from src.youtube import verifica_base_transcricoes
+from dotenv import load_dotenv
+load_dotenv()
 
 st.set_page_config(page_title="AI Trip Guide", layout="centered")
 
@@ -98,16 +101,15 @@ def home():
                 else:
                     st.markdown(f"**🤖 {remetente}:** {mensagem}")
 
-            # Exportação PDF
-            if st.button("📄 Exportar conversa como PDF"):
-                caminho_pdf = exportar_historico_para_pdf(st.session_state["historico"])
-                st.success("PDF exportado com sucesso!")
-                with open(caminho_pdf, "rb") as f:
-                    st.download_button(
-                        label="📥 Baixar PDF",
-                        data=f,
-                        file_name="resumo_viagem_completo.pdf",
-                        mime="application/pdf"
-                    )
-    else:
-        st.warning("O índice ainda não está disponível.")
+            if os.getenv("MODO") == "local":
+                # Exportação PDF
+                if st.button("📄 Exportar conversa como PDF"):
+                    caminho_pdf = exportar_historico_para_pdf(st.session_state["historico"])
+                    st.success("PDF exportado com sucesso!")
+                    with open(caminho_pdf, "rb") as f:
+                        st.download_button(
+                            label="📥 Baixar PDF",
+                            data=f,
+                            file_name="resumo_viagem_completo.pdf",
+                            mime="application/pdf"
+                        )

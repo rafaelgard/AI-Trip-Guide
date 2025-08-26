@@ -26,7 +26,7 @@ class llm_traveller():
         
         load_dotenv()
         
-        self.modo = "cloud"
+        self.modo =  os.getenv("MODO")
 
         self.GOOGLE_API_KEY  = os.getenv("GOOGLE_API_KEY")
 
