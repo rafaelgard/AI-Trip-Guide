@@ -28,21 +28,38 @@ def mostra_origem_da_resposta(resposta, tipo):
         st.markdown("### Origem da Resposta")
         st.markdown("Nenhuma fonte disponível.")
 
-def exportar_historico_para_pdf(historico):
+
+def exportar_historico_para_pdf(historico, caminho="historico_conversa.pdf"):
+    """
+    Exporta o histórico da conversa para um PDF formatado.
+
+    Args:
+        historico (list[tuple[str, str]]): Lista de pares (pergunta, resposta).
+        caminho (str): Caminho de saída do PDF.
+
+    Returns:
+        str: Caminho do arquivo PDF gerado.
+    """
+    
+    # Inicialização do PDF
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
 
-    fonte_regular = os.path.join("src", "fonts", "DejaVuSans.ttf")
-    fonte_bold = os.path.join("src", "fonts", "DejaVuSans-Bold.ttf")
+    # Fontes
+    fontes = {
+        "regular": os.path.join("src", "fonts", "DejaVuSans.ttf"),
+        "bold": os.path.join("src", "fonts", "DejaVuSans-Bold.ttf"),
+    }
+    pdf.add_font("DejaVu", "", fontes["regular"], uni=True)
+    pdf.add_font("DejaVu", "B", fontes["bold"], uni=True)
 
-    pdf.add_font("DejaVu", "", fonte_regular, uni=True)
-    pdf.add_font("DejaVu", "B", fonte_bold, uni=True)
-
+    # Cabeçalho
     pdf.add_page()
     pdf.set_font("DejaVu", "B", 16)
     pdf.cell(0, 10, "Histórico da Conversa", ln=True)
     pdf.ln(5)
 
+    # Conteúdo (Perguntas & Respostas)
     for pergunta, resposta in historico:
         pdf.set_font("DejaVu", "B", 12)
         pdf.multi_cell(0, 10, f"Você: {pergunta}")
@@ -52,17 +69,16 @@ def exportar_historico_para_pdf(historico):
         pdf.multi_cell(0, 10, f"LLM: {resposta}")
         pdf.ln(5)
 
-    pdf.set_font("DejaVu", "", 10)
-    pdf.ln(10)
-
+    # Rodapé
     rodape = (
         "Este resumo foi gerado automaticamente por um assistente de IA criado por Rafael Gardel.\n"
-        "Quer uma solução parecida? Me envie um email e poderemos conversar: rafaelgardel@gmail.com"
+        "Quer uma solução parecida? Me envie um email: rafaelgardel@gmail.com"
     )
-    
+    pdf.set_font("DejaVu", "", 10)
+    pdf.ln(10)
     pdf.multi_cell(0, 10, rodape)
 
-    caminho = "historico_conversa.pdf"
-    # breakpoint()
+    # Exportar
     pdf.output(caminho)
     return caminho
+
