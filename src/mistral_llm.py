@@ -12,6 +12,7 @@ from transformers import pipeline
 from google import genai
 from dotenv import load_dotenv
 from llama_index.llms.google_genai import GoogleGenAI
+from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 from .utils import trata_temas
 import time
 
@@ -31,16 +32,23 @@ class llm_traveller():
 
         self.llm_metadados = self.carregar_llm_para_metadados()
         self.llm_resumo = self.carregar_llm_resumo()
- 
-        embeddings = HuggingFaceEmbedding(
-            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            embed_batch_size=32,
-            device="cuda" if torch.cuda.is_available() else "cpu"
-        )
+        Settings.embed_model = self.get_embeddings()
 
-        Settings.embed_model = embeddings
+    def get_embeddings(self):
+        if self.modo == "local":
+            embeddings = HuggingFaceEmbedding(
+                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+                embed_batch_size=32,
+                device="cuda" if torch.cuda.is_available() else "cpu"
+            )
 
+        else:  # cloud
+            embeddings = GoogleGenAIEmbedding(
+                model="models/embedding-001", api_key=self.GOOGLE_API_KEY
+            )
 
+        return embeddings
+    
     def dividir_texto_em_blocos(self, texto, max_chars):
         """Divide o texto em blocos menores, respeitando o limite de caracteres."""
         blocos = []
@@ -66,7 +74,12 @@ class llm_traveller():
     
     def checa_se_o_indice_existe(self):
         ''' Verifica se o índice já existe no diretório especificado '''
-        caminho = 'src/vectordatabase/docstore.json'
+
+        if self.modo == 'local':
+            caminho = 'src/vectordatabase/local/docstore.json'
+
+        elif self.modo == 'cloud':
+            caminho = 'src/vectordatabase/cloud/docstore.json'
         return os.path.exists(caminho)
 
     def ler_metadados_json(self, caminho):
@@ -216,7 +229,6 @@ class llm_traveller():
             """Carrega o modelo LLM Mistral para uso com LlamaIndex."""
 
             modelo = "mistralai/Mistral-7B-Instruct-v0.2"
-            # modelo = "openai/gpt-oss-20b"
             quantization_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_compute_dtype=torch.float16,
@@ -312,16 +324,6 @@ class llm_traveller():
 
             response = self.llm_metadados.complete(prompt)
 
-
-            # print("texto")
-            # print(texto)
-            # print("======================================")
-            # print("prompt")
-            # print(prompt)
-            # print("======================================")
-            # print("response")
-            # print(response.text)
-
             return response.text
 
     def pre_processa_textos(self, data):
@@ -339,15 +341,15 @@ class llm_traveller():
         elif self.modo == "cloud":
             max_chars = 1000000
 
-        breakpoint()
         for i, texto in enumerate(textos):
 
             blocos = self.dividir_texto_em_blocos(texto, max_chars=max_chars)
 
             for j, bloco_de_texto in enumerate(blocos):
  
+                # ignora blocos irrelevantes
                 if len(bloco_de_texto.strip()) < 20:                   
-                    continue  # ignora blocos irrelevantes
+                    continue  
 
                 if self.habilitar_correcao_gramatical:
                     print(f"Corrigindo bloco de texto {i + 1}, parte {j + 1}...")            
@@ -356,7 +358,7 @@ class llm_traveller():
                     
                 if self.habilitar_geracao_de_metadados:
                     metadados = self.gerar_metadados(bloco_de_texto)
-                    # print(f"metadados do texto {i+1} bloco {j + 1}: {metadados}")
+                    print(f"metadados do texto {i+1} bloco {j + 1}: {metadados}")
 
                 else:
                     metadados = {"tema": "desconhecido"}
@@ -367,7 +369,7 @@ class llm_traveller():
 
                 elif self.modo == 'cloud':
                     temas = trata_temas(metadados)
-                    print(temas)
+                    print(f"temas: {temas}...")
                     
                 # Calcula a duração em minutos do bloco de texto proporcionalmente a quantidade de caracteres 
                 # do bloco em relação ao texto original
@@ -407,7 +409,13 @@ class llm_traveller():
 
         documents = self.pre_processa_textos(data)
         index = VectorStoreIndex.from_documents(documents)
-        persist_dir = "src/vectordatabase"
+
+        if self.modo == 'local':
+            persist_dir = "src/vectordatabase/local"
+
+        elif self.modo == 'cloud':
+            persist_dir = "src/vectordatabase/cloud"
+      
         index.storage_context.persist(persist_dir=persist_dir)
         print("Índice criado e salvo com sucesso!")
 
@@ -509,7 +517,11 @@ class llm_traveller():
     def carrega_indice(self):
         self.llm_respostas = self.carregar_llm_para_llamaindex() 
 
-        persist_dir = "src/vectordatabase"
+        if self.modo == 'local':
+            persist_dir = "src/vectordatabase/local"
+
+        elif self.modo == 'cloud':
+            persist_dir = "src/vectordatabase/cloud"
 
         # Cria o storage context apontando para o diretório persistido
         storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
@@ -545,14 +557,12 @@ class llm_traveller():
             custom_query, index = self.carrega_indice()
 
         else:
-
-            # textos, nomes_arquivos = self.ler_arquivos_txt("src/transcriptions")
+            print("Índice não encontrado. Criando um novo índice...")
             data = self.ler_arquivos_txt("src/transcriptions")
 
             if data['textos']:
                 with st.spinner("Construindo índice a partir dos vídeos..."):
                     self.criar_indice(data)
-                    # custom_query, index = self.carregar_ou_criar_indice()
                     custom_query, index = self.carrega_indice()
            
                 st.success("Índice criado com sucesso!")
