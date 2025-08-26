@@ -12,19 +12,3 @@ def contato():
         - 🐙 **Portfólio**: [rafaelgard.github.io](https://rafaelgard.github.io/)  
         """
     )
-
-    # st.divider()
-
-    # st.subheader("📨 Envie uma mensagem rápida")
-    # with st.form("form_contato"):
-    #     nome = st.text_input("Seu nome")
-    #     email = st.text_input("Seu e-mail")
-    #     mensagem = st.text_area("Mensagem")
-    #     enviar = st.form_submit_button("Enviar")
-
-    #     if enviar:
-    #         if nome and email and mensagem:
-    #             st.success(f"Obrigado {nome}, sua mensagem foi enviada com sucesso!")
-    #             # Aqui você pode integrar com um backend (ex: e-mail, banco de dados, Google Sheets, etc.)
-    #         else:
-    #             st.error("Por favor, preencha todos os campos antes de enviar.")
