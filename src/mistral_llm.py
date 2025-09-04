@@ -1,20 +1,25 @@
 import os
-import torch
 import json
 import streamlit as st
-from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.core import VectorStoreIndex, Document, Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core import StorageContext, load_index_from_storage
-from transformers import BitsAndBytesConfig
-from transformers import pipeline
-from google import genai
 from dotenv import load_dotenv
-from llama_index.llms.google_genai import GoogleGenAI
-from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
-from .utils import trata_temas
 import time
+
+if os.getenv("MODO") == 'local':
+    import torch
+    from transformers import pipeline
+    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+    from llama_index.llms.huggingface import HuggingFaceLLM
+    from transformers import BitsAndBytesConfig
+        
+elif os.getenv("MODO") == 'cloud':
+    from .utils import trata_temas
+    from llama_index.llms.google_genai import GoogleGenAI
+    from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
+
+load_dotenv()
 
 class llm_traveller():
     def __init__(self, habilitar_correcao_gramatical, habilitar_geracao_de_metadados):
@@ -23,13 +28,9 @@ class llm_traveller():
         self.load_configs()
 
     def load_configs(self):
-        
-        load_dotenv()
-        
+           
         self.modo =  os.getenv("MODO")
-
         self.GOOGLE_API_KEY  = os.getenv("GOOGLE_API_KEY")
-
         self.llm_metadados = self.carregar_llm_para_metadados()
         self.llm_resumo = self.carregar_llm_resumo()
         Settings.embed_model = self.get_embeddings()
