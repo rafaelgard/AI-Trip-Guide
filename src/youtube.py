@@ -3,12 +3,14 @@ import os
 import subprocess
 import json
 import time
-import whisper
-from slugify import slugify
-import yt_dlp
 from dotenv import load_dotenv
 import streamlit as st
 
+if os.getenv("MODO") == 'local':
+    import whisper
+    from slugify import slugify
+    import yt_dlp
+    
 load_dotenv()
 
 modo = os.getenv("MODO")
