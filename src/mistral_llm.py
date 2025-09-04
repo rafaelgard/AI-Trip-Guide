@@ -6,6 +6,7 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core import StorageContext, load_index_from_storage
 from dotenv import load_dotenv
 import time
+# from google import genai
 
 if os.getenv("MODO") == 'local':
     import torch

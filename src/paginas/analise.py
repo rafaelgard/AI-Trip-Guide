@@ -1,13 +1,15 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 from collections import Counter
-from llama_index.core import StorageContext, load_index_from_storage, Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.core import Settings
 from src.mistral_llm import llm_traveller
 from dotenv import load_dotenv
 import os
 load_dotenv()
 modo = os.getenv("MODO")
+
+if modo != 'cloud':
+    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 @st.cache_data(show_spinner="🔄 Carregando dados do índice...")
 def carregar_blocos():
