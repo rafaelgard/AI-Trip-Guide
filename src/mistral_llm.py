@@ -150,11 +150,6 @@ class llm_traveller():
         if self.modo == "local":
             """Carrega o modelo LLM Mistral para geração de resumos."""
             modelo = "mistralai/Mistral-7B-Instruct-v0.2"
-            # modelo = "openai/gpt-oss-20b"
-            # quant_config = BitsAndBytesConfig(
-            #     load_in_4bit=True,
-            #     bnb_4bit_compute_dtype=torch.float16,
-            # )
 
             quantization_config = BitsAndBytesConfig(
                 load_in_4bit=True,
@@ -395,7 +390,7 @@ class llm_traveller():
                         }
                     )
                     
-                    time.sleep(30) # dorme devido ao limite de RPM do Gemini
+                    time.sleep(1) # dorme devido ao limite de RPM do Gemini
 
                 documents.append(doc)
         
@@ -496,7 +491,9 @@ class llm_traveller():
                 print(f"Temas identificados da pergunta: {temas}")
                 
                 # aqui eu vou precisar revisar como buscar multiplos temas, pois está indexando errado do tipo tema1,tema2, mas se mudar a ordem da pergunta ele não encontra
-                retriever = _index.as_retrieverfilters={"temas": {"$contains": temas}}
+                # retriever = _index.as_retrieverfilters={"temas": {"$contains": temas}}
+                retriever = _index.as_retriever(filters={"temas": {"$contains": temas}})
+
                 query_engine = RetrieverQueryEngine.from_args(
                     retriever=retriever,
                     response_mode="compact",

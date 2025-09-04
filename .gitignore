@@ -48,5 +48,8 @@ src/cache/respostas_chile.json
 data/
 !data/.gitkeep
 
+#testes
+.testes/*.py
+
 teste.py
 resumos.py
