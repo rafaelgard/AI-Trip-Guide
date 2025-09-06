@@ -54,4 +54,4 @@ data/
 teste.py
 resumos.py
 
-chave_instancia_ec2_ai_trip_guide.pem
+*.pem

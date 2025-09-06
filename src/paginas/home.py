@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from src.utils import exportar_historico_para_pdf
-from src.mistral_llm import llm_traveller
+from src.llm import llm_traveller
 from src.themes import THEMATIC_QUESTIONS
 from src.cache.respostas_cache import obter_ou_gerar_resposta, preencher_cache_com_exemplos
 from src.youtube import verifica_base_transcricoes
@@ -13,7 +13,7 @@ st.set_page_config(page_title="AI Trip Guide", layout="centered")
 def home():
 
     st.title("📍 AI Trip Guide")
-    st.markdown("Explore dezenas de vídeos sobre o **Chile** e faça perguntas com base nas experiências de vários viajantes.")
+    st.markdown("Explore o conteúdo de dezenas de vídeos sobre o **Chile** e faça perguntas com base nas experiências de vários viajantes.")
 
     # Inicializa estados
     if "historico" not in st.session_state:
@@ -26,13 +26,15 @@ def home():
         st.session_state["tema_selecionado"] = ""
 
     # Carrega índice e função de consulta
+    if "classe" not in st.session_state:
+        st.session_state["classe"] = llm_traveller(habilitar_correcao_gramatical=False, habilitar_geracao_de_metadados=True)
+
     if "index" not in st.session_state:
-        classe = llm_traveller(habilitar_correcao_gramatical=False, habilitar_geracao_de_metadados=True)
-        st.session_state["query_fn"], st.session_state["index"] = classe.carregar_ou_criar_indice()
+        st.session_state["query_fn"], st.session_state["index"] = st.session_state["classe"].carregar_ou_criar_indice()
 
     if "index" in st.session_state:
         if "query_fn" not in st.session_state:
-            st.session_state["query_fn"] = classe.criar_query_fn_a_partir_do_indice(st.session_state["index"])
+            st.session_state["query_fn"] = st.session_state["classe"].criar_query_fn_a_partir_do_indice(st.session_state["index"])
 
         # Seção de temas
         st.subheader("💡 Escolha um tema para perguntas sugeridas")
@@ -70,7 +72,7 @@ def home():
             value=st.session_state["pergunta_preenchida"],
             key="input_pergunta"
         )
-
+        
         # # Verifica se a base de transcrições está pronta
         with st.spinner("Verificando o tamanho da base de transcrições existente...", show_time=True):
             verifica_base_transcricoes()

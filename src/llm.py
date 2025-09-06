@@ -6,7 +6,8 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core import StorageContext, load_index_from_storage
 from dotenv import load_dotenv
 import time
-# from google import genai
+
+load_dotenv()
 
 if os.getenv("MODO") == 'local':
     import torch
@@ -20,7 +21,6 @@ elif os.getenv("MODO") == 'cloud':
     from llama_index.llms.google_genai import GoogleGenAI
     from llama_index.embeddings.google_genai import GoogleGenAIEmbedding
 
-load_dotenv()
 
 class llm_traveller():
     def __init__(self, habilitar_correcao_gramatical, habilitar_geracao_de_metadados):

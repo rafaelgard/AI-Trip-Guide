@@ -6,14 +6,15 @@ import time
 from dotenv import load_dotenv
 import streamlit as st
 
-if os.getenv("MODO") == 'local':
-    import whisper
-    from slugify import slugify
-    import yt_dlp
     
 load_dotenv()
 
 modo = os.getenv("MODO")
+
+if modo == 'local':
+    import whisper
+    from slugify import slugify
+    import yt_dlp
 
 def buscar_videos_youtube(query, max_results=30):
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -147,6 +148,8 @@ def contar_transcricoes_existentes(pasta="src/transcriptions"):
     return total
 
 def verifica_base_transcricoes():
+    modo = os.getenv("MODO")
+    
     if modo !='cloud':
         total_transcricoes_existentes = contar_transcricoes_existentes()
         num_videos = int(os.getenv("NUM_VIDEOS", 30))
